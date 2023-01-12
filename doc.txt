@@ -14,3 +14,5 @@ curl https://api.openai.com/v1/completions \
 
 API KYE:
 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
+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
+
