@@ -44,6 +44,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    _intMessages();
   }
 
   @override
@@ -222,21 +223,30 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
 
-    // _addMessage(textMessage);
+    _addMessage(textMessage);
     print(textMessage.text);
     _callApiChatGPT(textMessage.text);
   }
 
-  // void _loadMessages() async {
-  //   final response = await rootBundle.loadString('assets/messages.json');
-  //   final messages = (jsonDecode(response) as List)
-  //       .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-  //       .toList();
+  void _loadMessages() async {
+    final response = await rootBundle.loadString('assets/messages.json');
+    final messages = (jsonDecode(response) as List)
+        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
+        .toList();
 
-  //   setState(() {
-  //     _messages = messages;
-  //   });
-  // }
+    setState(() {
+      _messages = messages;
+    });
+  }
+  void _intMessages() {
+    final textMessage = types.TextMessage(
+      author: _user,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: const Uuid().v4(),
+      text: "Hello Dev! Chat GPT",
+    );
+    _addMessage(textMessage);
+  }
 
   _callApiChatGPT(value) async {
     final uri = Uri.parse('https://api.openai.com/v1/completions');
@@ -267,15 +277,16 @@ class _ChatPageState extends State<ChatPage> {
 
     int statusCode = response.statusCode;
     String responseBody = response.body;
+    print(responseBody);
+    final textMessage = types.TextMessage(
+      author: _user,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: const Uuid().v4(),
+      text: responseBody,
+    );
+    _addMessage(textMessage);
+    // if (statusCode == 200) {
 
-    if (statusCode == 200) {
-      var data = jsonDecode(response.body);
-      var text = data.choices.text;
-      print(text);
-      print(responseBody);
-      setState(() {
-        _messages = responseBody as List<types.Message>;
-      });
-    }
+    // }
   }
 }
